@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useMarketplace } from "../../hooks/useMarketplace.hook";
 import { BorrowModal } from "../components/BorrowModal";
 import { ProvideLiquidityModal } from "../components/ProvideLiquidityModal";
 import { SupplyUSDCModal } from "../components/SupplyUSDCModal";
 import { SupplyXLMCollateralModal } from "../components/SupplyXLMCollateralModal";
+import { ActivityFeed } from "../components/ActivityFeed";
 
 // Pool Data Interface
 interface PoolReserve {
@@ -16,6 +18,8 @@ interface PoolReserve {
 }
 
 export default function Marketplace() {
+  const [activeTab, setActiveTab] = useState<'supply' | 'analytics' | 'activity'>('supply');
+  
   const {
     loading,
     deploying,
@@ -189,14 +193,32 @@ export default function Marketplace() {
         <div className="p-5">
           {/* Pool Tabs */}
           <div className="tab-buttons flex mb-4">
-            <div className="tab-btn active">Supply & Borrow</div>
-            <div className="tab-btn">Analytics</div>
-            <div className="tab-btn">History</div>
+            <div 
+              className={`tab-btn ${activeTab === 'supply' ? 'active' : ''}`}
+              onClick={() => setActiveTab('supply')}
+            >
+              Supply & Borrow
+            </div>
+            <div 
+              className={`tab-btn ${activeTab === 'analytics' ? 'active' : ''}`}
+              onClick={() => setActiveTab('analytics')}
+            >
+              Analytics
+            </div>
+            <div 
+              className={`tab-btn ${activeTab === 'activity' ? 'active' : ''}`}
+              onClick={() => setActiveTab('activity')}
+            >
+              Activity Feed
+            </div>
           </div>
 
-          {/* Asset Table */}
-          <div className="overflow-x-auto">
-            <table className="custom-table">
+          {/* Tab Content */}
+          {activeTab === 'supply' && (
+            <>
+              {/* Asset Table */}
+              <div className="overflow-x-auto">
+                <table className="custom-table">
               <thead>
                 <tr>
                   <th>Asset</th>
@@ -516,6 +538,33 @@ export default function Marketplace() {
               </button>
             </div>
           </div>
+            </>
+          )}
+
+          {activeTab === 'analytics' && (
+            <div className="text-center py-8">
+              <div className="text-gray-500">
+                <div className="text-4xl mb-4">📊</div>
+                <h3 className="text-lg font-medium mb-2">Analytics Coming Soon</h3>
+                <p className="text-sm">
+                  Advanced analytics and charts will be available here.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'activity' && (
+            <div className="mt-4">
+              <ActivityFeed 
+                poolId={deployedPoolId}
+                autoRefresh={true}
+                refreshInterval={30000}
+                onActivityClick={(activity) => {
+                  console.log('Activity clicked:', activity);
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
 
